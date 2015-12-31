@@ -15,7 +15,7 @@ SdFat supports long filenames.
 
 Please read the html documentation in the doc folder of this repository.
 
-The look at the classes tab for details about class member functions.
+Look at the classes tab for details about class member functions.
 
 
 ## Examples
