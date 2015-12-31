@@ -435,7 +435,13 @@ void setup() {
   char c;
   Serial.begin(9600);
   while (!Serial) {} // wait for Leonardo
-
+  
+  cout << F("Type any character to start\n");
+  while (Serial.read() <= 0) {}
+  
+  // Discard any extra characters.
+  do {delay(10);} while (Serial.read() >= 0);
+  
   cout << F(
          "\n"
          "This program can erase and/or format SD/SDHC cards.\n"

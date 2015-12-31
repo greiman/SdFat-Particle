@@ -1,6 +1,9 @@
+#pragma SPARK_NO_PREPROCESSOR
 #include "SdFat/SdFat.h"
 // Don't connect to the cloud to reduce time jitter.
-SYSTEM_MODE(MANUAL);
+// WARNING you must use safe mode for OTA flash if you use manual mode.
+// Remove comment on next line to decrease time jitter.
+// SYSTEM_MODE(MANUAL);
 /**
  * This program logs data to a binary file.  Functions are included
  * to convert the binary file to a csv text file.
@@ -53,7 +56,7 @@ void printHeader(Print* pr) {
 // Start of configuration constants.
 //==============================================================================
 //Interval between data records in microseconds.
-const uint32_t LOG_INTERVAL_USEC = 500;
+const uint32_t LOG_INTERVAL_USEC = 2000;
 //------------------------------------------------------------------------------
 // Pin definitions.
 //
