@@ -56,7 +56,7 @@ SdFile file;
 // Serial output stream
 ArduinoOutStream cout(Serial);
 //------------------------------------------------------------------------------
-// store error strings in flash to save RAM.
+// Store error strings in flash to save RAM.
 #define error(s) sd.errorHalt(F(s))
 //------------------------------------------------------------------------------
 void cidDmp() {
@@ -82,7 +82,11 @@ void cidDmp() {
 //------------------------------------------------------------------------------
 void setup() {
   Serial.begin(9600);
-  while (!Serial) {} // wait for Leonardo
+
+  // Wait for USB Serial 
+  while (!Serial) {
+    SysCall::yield();
+  }
   delay(1000);
   cout << F("\nUse a freshly formatted SD for best performance.\n");
 
@@ -98,12 +102,15 @@ void loop() {
   uint32_t totalLatency;
 
   // discard any input
-  while (Serial.read() >= 0) {}
+  do {
+    delay(10);
+  } while (Serial.read() >= 0);
 
   // F( stores strings in flash to save RAM
   cout << F("Type any character to start\n");
-  while (Serial.read() <= 0) {}
-  delay(400);  // catch Due reset problem
+  while (Serial.read() <= 0) {
+    SysCall::yield();
+  }
 
   cout << F("FreeMemory: ") << System.freeMemory() << endl;
 
@@ -120,10 +127,9 @@ void loop() {
   cidDmp();
 
   // open or create file - truncate existing file.
-  if (!file.open("bench.dat", O_CREAT | O_RDWR)) {
+  if (!file.open("bench.dat", O_CREAT | O_TRUNC | O_RDWR)) {
     error("open failed");
   }
-  if (WRITE_COUNT)file.truncate(0);
   
   // fill buf with known data
   for (uint16_t i = 0; i < (BUF_SIZE-2); i++) {
@@ -202,8 +208,8 @@ void loop() {
         error("data check");
       }
     }
+    s = file.fileSize();    
     t = millis() - t;
-    s = file.fileSize();
     cout << s/t <<',' << maxLatency << ',' << minLatency;
     cout << ',' << totalLatency/n << endl;
   }

@@ -1,5 +1,5 @@
 #include "SdFat/SdFat.h"
-// Function to read a text file one field at a time.
+// Function to read a CSV text file one field at a time.
 
 #define CS_PIN SS
 
@@ -25,7 +25,7 @@ File file;
  * if not at end-of-file.
  *
  */
-size_t readField(File* file, char* str, size_t size, char* delim) {
+size_t readField(File* file, char* str, size_t size, const char* delim) {
   char ch;
   size_t n = 0;
   while ((n + 1) < size && file->read(&ch, 1) == 1) {
@@ -42,14 +42,19 @@ size_t readField(File* file, char* str, size_t size, char* delim) {
   return n;
 }
 //------------------------------------------------------------------------------
-#define errorHalt(msg) {Serial.println(F(msg)); while(1);}
+#define errorHalt(msg) {Serial.println(F(msg)); SysCall::halt();}
 //------------------------------------------------------------------------------
 void setup() {
   Serial.begin(9600);
-  while (!Serial) {}  // wait for Leonardo
+  
+  // Wait for USB Serial 
+  while (!Serial) {
+    SysCall::yield();
+  }
   Serial.println("Type any character to start");
-  while (Serial.read() <= 0) {}
-  delay(400);  // catch Due reset problem
+  while (Serial.read() <= 0) {
+    SysCall::yield();
+  }
   
   // Initialize the SD.
   if (!SD.begin(CS_PIN)) errorHalt("begin failed");

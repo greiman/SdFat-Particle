@@ -6,8 +6,6 @@
 // SD card chip select pin.
 const uint8_t SD_CHIP_SELECT = SS;
 //------------------------------------------------------------------------------
-// Permit SD to be wiped if ALLOW_WIPE is true.
-const bool ALLOW_WIPE = false;
 
 // File system object.
 SdFat sd;
@@ -28,14 +26,18 @@ ArduinoInStream cin(Serial, cinBuf, sizeof(cinBuf));
 #define error(msg) sd.errorHalt(F(msg))
 //------------------------------------------------------------------------------
 void setup() {
-  char buf[10];
   Serial.begin(9600);
-  while (!Serial) {} // wait for Leonardo
+  
+  // Wait for USB Serial 
+  while (!Serial) {
+    SysCall::yield();
+  }
   delay(1000);
 
   cout << F("Type any character to start\n");
   // Wait for input line and discard.
   cin.readline();
+  cout << endl;
   
   // Initialize the SD card at SPI_HALF_SPEED to avoid bus errors with
   // breadboards.  use SPI_FULL_SPEED for better performance.
@@ -47,8 +49,21 @@ void setup() {
     || sd.exists("Folder1/File2.txt")) {
     error("Please remove existing Folder1, file1.txt, and File2.txt");
   }
-  cout << F("\Please use an empty SD for best results.\n\n");
-
+  int rootFileCount = 0;
+  sd.vwd()->rewind();   
+  while (file.openNext(sd.vwd(), O_READ)) {
+    if (!file.isHidden()) {
+      rootFileCount++;
+    }
+    file.close();
+    if (rootFileCount > 10) {
+      error("Too many files in root. Please use an empty SD.");
+    }
+  }
+  if (rootFileCount) {
+    cout << F("\nPlease use an empty SD for best results.\n\n");
+    delay(1000);    
+  }
   // Create a new folder.
   if (!sd.mkdir("Folder1")) {
     error("Create Folder1 failed");

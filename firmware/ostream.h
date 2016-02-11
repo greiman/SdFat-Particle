@@ -176,7 +176,7 @@ class ostream : public virtual ios {
     putNum(reinterpret_cast<uint32_t>(arg));
     return *this;
   }
-#if defined(ARDUINO) || defined(DOXYGEN)
+#if (defined(ARDUINO) && ENABLE_ARDUINO_FEATURES) || defined(DOXYGEN)
   /** Output a string from flash using the Arduino F() macro.
    * \param[in] arg pointing to flash string
    * \return the stream
@@ -185,7 +185,7 @@ class ostream : public virtual ios {
     putPgm(reinterpret_cast<const char*>(arg));
     return *this;
   }
-#endif  // defined(ARDUINO) || defined(DOXYGEN)
+#endif  // (defined(ARDUINO) && ENABLE_ARDUINO_FEATURES) || defined(DOXYGEN)
   /**
    * Puts a character in a stream.
    *

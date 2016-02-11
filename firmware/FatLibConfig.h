@@ -134,7 +134,7 @@
  *  Enable Extra features for Arduino.
  */
 #ifndef ENABLE_ARDUINO_FEATURES
-#if defined(ARDUINO) || defined(PLATFORM_ID) ||defined(DOXYGEN)
+#if defined(ARDUINO) || defined(PLATFORM_ID) || defined(DOXYGEN)
 #define ENABLE_ARDUINO_FEATURES 1
 #else  //  #if defined(ARDUINO) || defined(DOXYGEN)
 #define ENABLE_ARDUINO_FEATURES 0

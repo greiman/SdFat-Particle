@@ -404,7 +404,7 @@ class StdioStream : private FatFile {
     return n < 0 ? 0 : n;
   }
   //----------------------------------------------------------------------------
-#if defined(ARDUINO) || defined(DOXYGEN)  
+#if (defined(ARDUINO) && ENABLE_ARDUINO_FEATURES) || defined(DOXYGEN)
   /** Print a string stored in flash memory.
    *
    * \param[in] str the string to print.
@@ -412,7 +412,7 @@ class StdioStream : private FatFile {
    * \return the number of bytes written.
    */
   size_t print(const __FlashStringHelper *str);
-#endif  // defined(ARDUINO) || defined(DOXYGEN)  
+#endif  // (defined(ARDUINO) && ENABLE_ARDUINO_FEATURES) || defined(DOXYGEN)
   //----------------------------------------------------------------------------
   /** Print a floating point number.
    *

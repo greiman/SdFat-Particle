@@ -82,47 +82,6 @@
 #define SD_SPI_CONFIGURATION 3
 //------------------------------------------------------------------------------
 /**
- * Determine the default SPI configuration.
- */
-#if defined(__AVR__)\
-  || defined(__SAM3X8E__) || defined(__SAM3X8H__)\
-  || (defined(__arm__) && defined(CORE_TEENSY))\
-  || defined(__STM32F1__)\
-  || defined(PLATFORM_ID)\
-  || defined(DOXYGEN)
-// Use custom fast implementation.
-#define SD_HAS_CUSTOM_SPI 1
-#else  // SD_HAS_CUSTOM_SPI
-// Use standard SPI library.
-#define SD_HAS_CUSTOM_SPI 0
-#endif  // SD_HAS_CUSTOM_SPI
-//-----------------------------------------------------------------------------
-/**
- *  Number of hardware interfaces.
- */
-#if defined(PLATFORM_ID)
-#if Wiring_SPI1 && Wiring_SPI2
-#define SPI_INTERFACE_COUNT 3
-#elif Wiring_SPI1
-#define SPI_INTERFACE_COUNT 2
-#endif  // Wiring_SPI1 && Wiring_SPI2
-#endif  // defined(PLATFORM_ID)
-// default is one
-#ifndef SPI_INTERFACE_COUNT
-#define SPI_INTERFACE_COUNT 1
-#endif  // SPI_INTERFACE_COUNT
-//------------------------------------------------------------------------------
-/**
- * Check if API to select HW SPI interface is needed.
- */
-#if SPI_INTERFACE_COUNT > 1 && SD_HAS_CUSTOM_SPI\
-  && SD_SPI_CONFIGURATION != 1 && SD_SPI_CONFIGURATION != 2
-#define IMPLEMENT_SPI_INTERFACE_SELECTION 1
-#else  // SPI_INTERFACE_COUNT > 1
-#define IMPLEMENT_SPI_INTERFACE_SELECTION 0
-#endif  // SPI_INTERFACE_COUNT > 1
-//------------------------------------------------------------------------------
-/**
  * If SD_SPI_CONFIGURATION is defined to be two, these definitions
  * will define the pins used for software SPI.
  *
@@ -221,4 +180,45 @@ const uint8_t SPI_SCK_INIT_DIVISOR = 128;
 #else  // RAMEND
 #define USE_MULTI_BLOCK_IO 1
 #endif  // RAMEND
+//------------------------------------------------------------------------------
+/**
+ * Determine the default SPI configuration.
+ */
+#if defined(__AVR__)\
+  || defined(__SAM3X8E__) || defined(__SAM3X8H__)\
+  || (defined(__arm__) && defined(CORE_TEENSY))\
+  || defined(__STM32F1__)\
+  || defined(PLATFORM_ID)\
+  || defined(DOXYGEN)
+// Use custom fast implementation.
+#define SD_HAS_CUSTOM_SPI 1
+#else  // SD_HAS_CUSTOM_SPI
+// Use standard SPI library.
+#define SD_HAS_CUSTOM_SPI 0
+#endif  // SD_HAS_CUSTOM_SPI
+//-----------------------------------------------------------------------------
+/**
+ *  Number of hardware interfaces.
+ */
+#if defined(PLATFORM_ID)
+#if Wiring_SPI1 && Wiring_SPI2
+#define SPI_INTERFACE_COUNT 3
+#elif Wiring_SPI1
+#define SPI_INTERFACE_COUNT 2
+#endif  // Wiring_SPI1 && Wiring_SPI2
+#endif  // defined(PLATFORM_ID)
+// default is one
+#ifndef SPI_INTERFACE_COUNT
+#define SPI_INTERFACE_COUNT 1
+#endif  // SPI_INTERFACE_COUNT
+//------------------------------------------------------------------------------
+/**
+ * Check if API to select HW SPI interface is needed.
+ */
+#if SPI_INTERFACE_COUNT > 1 && SD_HAS_CUSTOM_SPI\
+  && SD_SPI_CONFIGURATION != 1 && SD_SPI_CONFIGURATION != 2
+#define IMPLEMENT_SPI_INTERFACE_SELECTION 1
+#else  // SPI_INTERFACE_COUNT > 1
+#define IMPLEMENT_SPI_INTERFACE_SELECTION 0
+#endif  // SPI_INTERFACE_COUNT > 1
 #endif  // SdFatConfig_h

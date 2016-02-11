@@ -58,11 +58,14 @@ void printTimestamps(SdFile& f) {
 //------------------------------------------------------------------------------
 void setup(void) {
   Serial.begin(9600);
-  while (!Serial) {}  // wait for Leonardo
-
+  // Wait for USB Serial
+  while (!Serial) {
+    SysCall::yield();
+  }
   cout << F("Type any character to start\n");
-  while (!Serial.available());
-  delay(400);  // catch Due reset problem
+  while (!Serial.available()) {
+    SysCall::yield();  
+  }
   
   // Request time sync so example works.
   Particle.syncTime();

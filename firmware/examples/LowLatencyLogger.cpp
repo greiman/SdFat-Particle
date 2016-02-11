@@ -1,4 +1,3 @@
-#pragma SPARK_NO_PREPROCESSOR
 #include "SdFat/SdFat.h"
 // Don't connect to the cloud to reduce time jitter.
 // WARNING you must use safe mode for OTA flash if you use manual mode.
@@ -28,6 +27,9 @@ struct data_t {
   unsigned long time;
   unsigned short adc[ADC_DIM];
 };
+
+// Set useSharedSpi true for use of an SPI sensor.
+const bool useSharedSpi = false;
 
 // Acquire a data record.
 void acquireData(data_t* data) {
@@ -365,6 +367,10 @@ void logData() {
   if (!sd.card()->writeStart(bgnBlock, FILE_BLOCK_COUNT)) {
     error("writeBegin failed");
   }
+  // Set chip select high if other devices use SPI.
+  if (useSharedSpi) {
+    sd.card()->chipSelectHigh();
+  }  
   // Initialize queues.
   emptyHead = emptyTail = 0;
   fullHead = fullTail = 0;
@@ -391,7 +397,6 @@ void logData() {
   uint32_t maxDelta = 0;
   uint32_t minDelta = 99999;
   uint32_t maxLatency = 0;
-  int32_t delta;
   // Start at a multiple of interval.
   uint32_t logTime = micros()/LOG_INTERVAL_USEC + 1;
   logTime *= LOG_INTERVAL_USEC;
@@ -404,7 +409,7 @@ void logData() {
     }
 
     if (closeFile) {
-      if (curBlock != 0 && curBlock->count >= 0) {
+      if (curBlock != 0) {
         // Put buffer in full queue.
         fullQueue[fullHead] = curBlock;
         fullHead = queueNext(fullHead);
@@ -512,7 +517,11 @@ void setup(void) {
     pinMode(ERROR_LED_PIN, OUTPUT);
   }
   Serial.begin(9600);
-  while (!Serial) {}
+  
+  // Wait for USB Serial 
+  while (!Serial) {
+    SysCall::yield();
+  }
 
   Serial.print(F("FreeMemory: "));
   Serial.println(System.freeMemory());
@@ -530,7 +539,9 @@ void setup(void) {
 //------------------------------------------------------------------------------
 void loop(void) {
   // discard any input
-  while (Serial.read() >= 0) {}
+  do {
+    delay(10);
+  } while (Serial.read() >= 0);
   Serial.println();
   Serial.println(F("type:"));
   Serial.println(F("c - convert file to csv"));
@@ -538,7 +549,9 @@ void loop(void) {
   Serial.println(F("e - overrun error details"));
   Serial.println(F("r - record data"));
 
-  while(!Serial.available()) {}
+  while(!Serial.available()) {
+    SysCall::yield();
+  }
   char c = tolower(Serial.read());
 
   // Discard extra Serial data.

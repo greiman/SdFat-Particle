@@ -32,7 +32,10 @@
  */
 class SdSpiBase {
  public:
-  /** Initialize the SPI bus */
+  /** Initialize the SPI bus.
+   *
+   * \param[in] chipSelectPin SD card chip select pin.
+   */
   virtual void begin(uint8_t chipSelectPin) = 0;
   /** Set SPI options for access to SD/SDHC cards.
    *
@@ -41,7 +44,7 @@ class SdSpiBase {
   virtual void beginTransaction(uint8_t divisor);
   /**
    * End SPI transaction.
-   */  
+   */
   virtual void endTransaction();
   /** Receive a byte.
    *
@@ -79,7 +82,10 @@ class SdSpi : public SdSpiBase {
 class SdSpi {
 #endif  // SD_SPI_CONFIGURATION >= 3
  public:
-  /** Initialize the SPI bus */
+  /** Initialize the SPI bus.
+   *
+   * \param[in] chipSelectPin SD card chip select pin.
+   */
   void begin(uint8_t chipSelectPin);
   /** Set SPI options for access to SD/SDHC cards.
    *
@@ -135,10 +141,13 @@ class SdSpiLib : public SdSpiBase {
 class SdSpiLib {
 #endif  // SD_SPI_CONFIGURATION >= 3
  public:
-  /**
-   * Initialize SPI pins.
+  /** Initialize the SPI bus.
+   *
+   * \param[in] chipSelectPin SD card chip select pin.
    */
   void begin(uint8_t chipSelectPin) {
+    pinMode(chipSelectPin, OUTPUT);
+    digitalWrite(chipSelectPin, HIGH);
     SPI.begin();
   }
   /** Set SPI options for access to SD/SDHC cards.
@@ -147,10 +156,10 @@ class SdSpiLib {
    */
   void beginTransaction(uint8_t divisor) {
 #if ENABLE_SPI_TRANSACTIONS
-  SPI.beginTransaction(SPISettings());
+    SPI.beginTransaction(SPISettings());
 #else  // #if ENABLE_SPI_TRANSACTIONS
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE0);
+    SPI.setBitOrder(MSBFIRST);
+    SPI.setDataMode(SPI_MODE0);
 #endif  // #if ENABLE_SPI_TRANSACTIONS
 
 #ifndef SPI_CLOCK_DIV128
@@ -177,7 +186,7 @@ class SdSpiLib {
   }
   /**
    * End SPI transaction.
-   */  
+   */
   void endTransaction() {
 #if ENABLE_SPI_TRANSACTIONS
     SPI.endTransaction();
@@ -206,7 +215,7 @@ class SdSpiLib {
     }
     return 0;
   }
-#endif  // defined(PLATFORM_ID) && USE_SPI_LIB_DMA  
+#endif  // defined(PLATFORM_ID) && USE_SPI_LIB_DMA
   /** Send a byte.
    *
    * \param[in] b Byte to send
@@ -233,7 +242,7 @@ class SdSpiLib {
 #if SD_SPI_CONFIGURATION > 1 || defined(DOXYGEN)
 #ifdef ARDUINO
 #include "SoftSPI.h"
-#elif defined(PLATFORM_ID)  //Only defined if a Particle device
+#elif defined(PLATFORM_ID)  // Only defined if a Particle device
 #include "SoftSPIParticle.h"
 #endif  // ARDUINO
 /**
@@ -243,8 +252,9 @@ class SdSpiLib {
 template<uint8_t MisoPin, uint8_t MosiPin, uint8_t SckPin>
 class SdSpiSoft : public SdSpiBase {
  public:
-  /**
-   * initialize SPI pins
+  /** Initialize the SPI bus.
+   *
+   * \param[in] chipSelectPin SD card chip select pin.
    */
   void begin(uint8_t chipSelectPin) {
     pinMode(chipSelectPin, OUTPUT);
@@ -255,7 +265,9 @@ class SdSpiSoft : public SdSpiBase {
    * Initialize hardware SPI - dummy for soft SPI
    * \param[in] divisor SCK divisor - ignored.
    */
-  void beginTransaction(uint8_t divisor) {}
+  void beginTransaction(uint8_t divisor) {
+    (void)divisor;
+  }
   /**
    * End SPI transaction - dummy for soft SPI
    */

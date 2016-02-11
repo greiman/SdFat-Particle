@@ -3,7 +3,7 @@
  * Print size, modify date/time, and name for all files in root.
  */
 
-// SD default chip select pin
+// SD default chip select pin.
 const uint8_t chipSelect = SS;
 
 // file system object
@@ -13,11 +13,16 @@ SdFile file;
 //------------------------------------------------------------------------------
 void setup() {
   Serial.begin(9600);
-  while (!Serial) {} // wait for Leonardo
-  delay(1000);
+  
+  // Wait for USB Serial 
+  while (!Serial) {
+    SysCall::yield();
+  }
   
   Serial.println("Type any character to start");
-  while (Serial.read() <= 0) {}
+  while (Serial.read() <= 0) {
+    SysCall::yield();
+  }
 
   // initialize the SD card at SPI_HALF_SPEED to avoid bus errors with
   // breadboards.  use SPI_FULL_SPEED for better performance.
@@ -28,6 +33,7 @@ void setup() {
   // Open next file in root.  The volume working directory, vwd, is root.
   // Warning, openNext starts at the current position of sd.vwd() so a
   // rewind may be neccessary in your application.
+  sd.vwd()->rewind();  
   while (file.openNext(sd.vwd(), O_READ)) {
     file.printFileSize(&Serial);
     Serial.write(' ');

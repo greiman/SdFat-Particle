@@ -127,7 +127,7 @@ typedef struct masterBootRecord mbr_t;
  * 
  *  The BIOS parameter block describes the physical layout of a FAT volume.
  */
-struct biosParmBlock{
+struct biosParmBlock {
           /**
            * Count of bytes per sector. This value may take on only the
            * following values: 512, 1024, 2048 or 4096
@@ -238,7 +238,7 @@ struct biosParmBlock{
            * should always set all of the bytes of this field to 0.
            */
   uint8_t  fat32Reserved[12];
-};
+} __attribute__((packed));
 /** Type name for biosParmBlock */
 typedef struct biosParmBlock bpb_t;
 //------------------------------------------------------------------------------

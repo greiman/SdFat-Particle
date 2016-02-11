@@ -32,10 +32,15 @@ File myFile;
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial) {}  // wait for Leonardo
+  // Wait for USB Serial 
+  while (!Serial) {
+    SysCall::yield();
+  }
   
   Serial.println("Type any character to start");
-  while (Serial.read() <= 0) {}
+  while (Serial.read() <= 0) {
+    SysCall::yield();
+  }
 
   // Initialize SdFat or print a detailed error message and halt
   // Use half speed like the native library.

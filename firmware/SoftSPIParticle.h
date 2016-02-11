@@ -25,9 +25,9 @@
  * @details  Software SPI Template Class.
  * @{
  */
-
 #ifndef SoftSPIParticle_h
 #define SoftSPIParticle_h
+#if defined(PLATFORM_ID)
 #include "application.h"
 //------------------------------------------------------------------------------
 /** Nop for timing. */
@@ -154,5 +154,6 @@ class SoftSPI {
   }
   //----------------------------------------------------------------------------
 };
+#endif  // #if defined(PLATFORM_ID)
 #endif  // SoftSPIParticle_h
 /** @} */

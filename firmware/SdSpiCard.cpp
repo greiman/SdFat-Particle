@@ -212,8 +212,9 @@ uint8_t SdSpiCard::cardCommand(uint8_t cmd, uint32_t arg) {
 
 #if USE_SD_CRC
   // form message
-  uint8_t d[6] = {cmd | 0X40, pa[3], pa[2], pa[1], pa[0]};
 
+  uint8_t d[6] = {cmd , pa[3], pa[2], pa[1], pa[0]};
+  d[0] |= 0X40;
   // add crc
   d[5] = CRC7(d, 5);
 
@@ -332,12 +333,20 @@ bool SdSpiCard::eraseSingleBlockEnable() {
 }
 //------------------------------------------------------------------------------
 bool SdSpiCard::isBusy() {
+  bool rtn = true;
+  bool selected = m_selected;
+  chipSelectLow();
+
   for (uint8_t i = 0; i < 8; i++) {
     if (0XFF == spiReceive()) {
-      return false;
+      rtn = false;
+      break;
     }
   }
-  return true;
+  if (!selected) {
+    chipSelectHigh();
+  }
+  return rtn;
 }
 //------------------------------------------------------------------------------
 bool SdSpiCard::readBlock(uint32_t blockNumber, uint8_t* dst) {
@@ -353,7 +362,7 @@ bool SdSpiCard::readBlock(uint32_t blockNumber, uint8_t* dst) {
   if (!readData(dst, 512)) {
     goto fail;
   }
-  chipSelectHigh();  
+  chipSelectHigh();
   return true;
 
 fail:
@@ -366,7 +375,7 @@ bool SdSpiCard::readBlocks(uint32_t block, uint8_t* dst, size_t count) {
     return false;
   }
   for (uint16_t b = 0; b < count; b++, dst += 512) {
-    if (!readData(dst)) {
+    if (!readData(dst, 512)) {
       return false;
     }
   }
@@ -374,7 +383,15 @@ bool SdSpiCard::readBlocks(uint32_t block, uint8_t* dst, size_t count) {
 }
 //------------------------------------------------------------------------------
 bool SdSpiCard::readData(uint8_t *dst) {
-  return readData(dst, 512);
+  bool selected = m_selected;
+  chipSelectLow();
+  if (!readData(dst, 512)) {
+    return false;
+  }
+  if (!selected) {
+    chipSelectHigh();
+  }
+  return true;
 }
 //------------------------------------------------------------------------------
 bool SdSpiCard::readData(uint8_t* dst, size_t count) {
@@ -539,20 +556,25 @@ bool SdSpiCard::writeBlocks(uint32_t block, const uint8_t* src, size_t count) {
     }
   }
   return writeStop();
-  
+
  fail:
   chipSelectHigh();
-  return false; 
+  return false;
 }
 //------------------------------------------------------------------------------
 bool SdSpiCard::writeData(const uint8_t* src) {
+  bool selected = m_selected;
+  chipSelectLow();
   // wait for previous write to finish
   if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
-    error(SD_CARD_ERROR_WRITE_TIMEOUT);    
+    error(SD_CARD_ERROR_WRITE_TIMEOUT);
     goto fail;
   }
   if (!writeData(WRITE_MULTIPLE_TOKEN, src)) {
     goto fail;
+  }
+  if (!selected) {
+    chipSelectHigh();
   }
   return true;
 
@@ -608,6 +630,7 @@ fail:
 }
 //------------------------------------------------------------------------------
 bool SdSpiCard::writeStop() {
+  chipSelectLow();
   if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
     goto fail;
   }
