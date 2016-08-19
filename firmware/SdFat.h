@@ -240,10 +240,12 @@ class SdFatBase : public FatFileSystem {
   void initErrorPrint(Print* pr, const __FlashStringHelper* msg);
 #endif  // defined(ARDUINO) || defined(DOXYGEN)
 
- private:
   uint8_t cardErrorCode() {
     return m_sdCard.errorCode();
   }
+  
+ private:
+ // moved cardErrorCode() into public
   uint8_t cardErrorData() {
     return m_sdCard.errorData();
   }
