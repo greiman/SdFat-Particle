@@ -90,6 +90,14 @@ class SdFatBase : public FatFileSystem {
   SdSpiCard *card() {
     return &m_sdCard;
   }
+  /** \return card error code */
+  uint8_t cardErrorCode() {
+    return m_sdCard.errorCode();
+  }
+  /** \return card error data */
+  uint8_t cardErrorData() {
+    return m_sdCard.errorData();
+  }
   /** %Print any SD error code to Serial and halt. */
   void errorHalt() {
     errorHalt(&Serial);
@@ -241,12 +249,7 @@ class SdFatBase : public FatFileSystem {
 #endif  // defined(ARDUINO) || defined(DOXYGEN)
 
  private:
-  uint8_t cardErrorCode() {
-    return m_sdCard.errorCode();
-  }
-  uint8_t cardErrorData() {
-    return m_sdCard.errorData();
-  }
+
   bool readBlock(uint32_t block, uint8_t* dst) {
     return m_sdCard.readBlock(block, dst);
   }
