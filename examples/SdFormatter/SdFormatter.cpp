@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 /*
  * This program will format an SD or SDHC card.
  * Warning all data will be deleted!

@@ -1,7 +1,11 @@
-#include "SdFat/SdFat.h"
-// Function to read a CSV text file one field at a time.
-
+#include "SdFat.h"
+// Read a two dimensional array from a CSV file.
+//
 #define CS_PIN SS
+
+// 5 X 4 array
+#define ROW_DIM 5
+#define COL_DIM 4
 
 SdFat SD;
 File file;
@@ -46,8 +50,8 @@ size_t readField(File* file, char* str, size_t size, const char* delim) {
 //------------------------------------------------------------------------------
 void setup() {
   Serial.begin(9600);
-  
-  // Wait for USB Serial 
+
+    // Wait for USB Serial 
   while (!Serial) {
     SysCall::yield();
   }
@@ -55,56 +59,80 @@ void setup() {
   while (Serial.read() <= 0) {
     SysCall::yield();
   }
-  
   // Initialize the SD.
-  if (!SD.begin(CS_PIN)) errorHalt("begin failed");
-
+  if (!SD.begin(CS_PIN)) {
+    errorHalt("begin failed");
+  }
   // Create or open the file.
-  file = SD.open("READTEST.TXT", FILE_WRITE);
-  if (!file) errorHalt("open failed");
-
+  file = SD.open("READNUM.TXT", FILE_WRITE);
+  if (!file) {
+    errorHalt("open failed");
+  }
   // Rewind file so test data is not appended.
   file.rewind();
 
   // Write test data.
   file.print(F(
-    "field_1_1,field_1_2,field_1_3\r\n"
-    "field_2_1,field_2_2,field_2_3\r\n"
-    "field_3_1,field_3_2\r\n"           // missing a field
-    "field_4_1,field_4_2,field_4_3\r\n"
-    "field_5_1,field_5_2,field_5_3"     // no delimiter
+    "11,12,13,14\r\n"
+    "21,22,23,24\r\n"
+    "31,32,33,34\r\n"
+    "41,42,43,44\r\n"
+    "51,52,53,54"     // Allow missing endl at eof.
     ));
 
   // Rewind the file for read.
   file.rewind();
 
+  // Array for data.
+  int array[ROW_DIM][COL_DIM];
+  int i = 0;     // First array index.
+  int j = 0;     // Second array index
   size_t n;      // Length of returned field with delimiter.
   char str[20];  // Must hold longest field with delimiter and zero byte.
+  char *ptr;     // Test for valid field.
+
+  // Read the file and store the data.
   
-  // Read the file and print fields.
-  while (true) {
-    n = readField(&file, str, sizeof(str), ",\n");
-
-    // done if Error or at EOF.
-    if (n == 0) break;
-
-    // Print the type of delimiter.
-    if (str[n-1] == ',' || str[n-1] == '\n') {
-      Serial.print(str[n-1] == ',' ? F("comma: ") : F("endl:  "));
-      
-      // Remove the delimiter.
-      str[n-1] = 0;
-    } else {
-      // At eof, too long, or read error.  Too long is error.
-      Serial.print(file.available() ? F("error: ") : F("eof:   "));
+  for (i = 0; i < ROW_DIM; i++) {
+    for (j = 0; j < COL_DIM; j++) {
+      n = readField(&file, str, sizeof(str), ",\n");
+      if (n == 0) {
+        errorHalt("Too few lines");
+      }
+      array[i][j] = strtol(str, &ptr, 10);
+      if (ptr == str) {
+        errorHalt("bad number");
+      }
+      while (*ptr == ' ') {
+        ptr++;
+      }
+      if (*ptr != ',' && *ptr != '\n' && *ptr != '\0') {
+        errorHalt("extra characters in field");
+      }
+      if (j < (COL_DIM-1) && str[n-1] != ',') {
+        errorHalt("line with too few fields");
+      }
     }
-    // Print the field.
-    Serial.println(str);
+    // Allow missing endl at eof.
+    if (str[n-1] != '\n' && file.available()) {
+      errorHalt("missing endl");
+    }    
   }
+
+  // Print the array.
+  for (i = 0; i < ROW_DIM; i++) {
+    for (j = 0; j < COL_DIM; j++) {
+      if (j) {
+        Serial.print(' ');
+      }
+      Serial.print(array[i][j]);
+    }
+    Serial.println();
+  }
+  Serial.println("Done");
   file.close();
 }
 //------------------------------------------------------------------------------
 void loop() {
 }
-
 

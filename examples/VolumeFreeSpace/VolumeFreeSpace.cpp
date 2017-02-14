@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 /*
  * This program demonstrates the freeClusterCount() call.
  */

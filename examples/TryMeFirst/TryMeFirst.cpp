@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 
 // Pick an SPI configuration.
 // See SPI configuration section below (comments are for photon).

@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 /*
  * Example use of chdir(), ls(), mkdir(), and  rmdir().
  */

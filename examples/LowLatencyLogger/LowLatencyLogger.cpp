@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 // Don't connect to the cloud to reduce time jitter.
 // WARNING you must use safe mode for OTA flash if you use manual mode.
 // Remove comment on next line to decrease time jitter.

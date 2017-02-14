@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 // Use smaller transfer on Core.
 /*
  * This program is a simple binary read/write benchmark.

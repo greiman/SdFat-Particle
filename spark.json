@@ -1,7 +1,0 @@
-{
-  "name": "SdFat",
-  "author": "William Greiman <fat16lib@sbcglobal.net>",
-  "license": "GPL v3",
-  "version": "0.0.4",
-  "description": "An SD card library for Particle."
-}

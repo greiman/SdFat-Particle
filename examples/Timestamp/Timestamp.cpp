@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 // Warning, Particle.timeSync() seems to take a while to happen.
 // You may want to set your time zone with Time.zone(offaet).
 /*

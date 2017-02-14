@@ -1,4 +1,4 @@
-#include "SdFat/SdFat.h"
+#include "SdFat.h"
 /*
  * This program attempts to initialize an SD card and analyze its structure.
  * Port of Arduino version.
