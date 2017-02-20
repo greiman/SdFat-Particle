@@ -11,7 +11,11 @@ SdFat supports long filenames.
 
 ## Documentation
 
-Please read the html documentation in the doc folder of this repository.
+Download the SdFat-Particle-doc repository from GitHub.
+
+https://github.com/greiman/SdFat-Particle-doc
+
+Please read the html documentation in the html folder by opening SdFat.html.
 
 Look at the classes tab for details about class member functions.
 
