@@ -23,14 +23,11 @@
  * \file
  * \brief SysCall class
  */
-#if defined(ARDUINO)
-#include <Arduino.h>
-#include <SPI.h>
-#elif defined(PLATFORM_ID)  // Only defined if a Particle device
+#if defined(PLATFORM_ID)  // Only defined if a Particle device
 #include "application.h"
-#else  // defined(ARDUINO)
+#else  // defined(PLATFORM_ID)
 #error "Unknown system"
-#endif  // defined(ARDUINO)
+#endif  // defined(PLATFORM_ID)
 #ifndef F
 /** Define macro for strings stored in flash. */
 #define F(str) (str)
@@ -51,17 +48,12 @@ class SysCall {
   static void yield();
 };
 
-#if defined(ARDUINO)
-inline void SysCall::yield() {
-  // Use the external Arduino yield() function.
-  ::yield();
-}
-#elif defined(PLATFORM_ID)  // Only defined if a Particle device
+#if defined(PLATFORM_ID)  // Only defined if a Particle device
 inline void SysCall::yield() {
   Particle.process();
 }
-#else  // defined(ARDUINO)
+#else  // defined(PLATFORM_ID)
 inline void SysCall::yield() {}
-#endif  // defined(ARDUINO)
+#endif  // defined(PLATFORM_ID)
 
 #endif  // SysCall_h

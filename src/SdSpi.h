@@ -240,11 +240,9 @@ class SdSpiLib {
 };
 //------------------------------------------------------------------------------
 #if SD_SPI_CONFIGURATION > 1 || defined(DOXYGEN)
-#ifdef ARDUINO
-#include "SoftSPI.h"
-#elif defined(PLATFORM_ID)  // Only defined if a Particle device
+#if defined(PLATFORM_ID)  // Only defined if a Particle device
 #include "SoftSPIParticle.h"
-#endif  // ARDUINO
+#endif  // defined(PLATFORM_ID)
 /**
  * \class SdSpiSoft
  * \brief Software SPI class for access to SD and SDHC flash memory cards.

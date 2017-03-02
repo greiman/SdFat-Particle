@@ -23,16 +23,11 @@
  * \file
  * \brief SdFat class
  */
-#ifdef ARDUINO
-#include "SdSpiCard/SdSpiCard.h"
-#include "FatLib/FatLib.h"
-#else  // ARDUINO
 #include "SdSpiCard.h"
 #include "FatLib.h"
-#endif  // ARDUINO
 //------------------------------------------------------------------------------
 /** SdFat version YYYYMMDD */
-#define SD_FAT_VERSION 20160123
+#define SD_FAT_VERSION 20170302
 //==============================================================================
 /**
  * \class SdBaseFile

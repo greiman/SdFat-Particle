@@ -19,9 +19,7 @@
  */
 #ifndef SystemInclude_h
 #define SystemInclude_h
-#if defined(ARDUINO)
-#include "FatLib/SysCall.h"
-#elif defined(PLATFORM_ID)  // Only defined if a Particle device
+#if defined(PLATFORM_ID)  // Only defined if a Particle device
 #include "SysCall.h"
 #else   // System type
 #error Unknown System.
